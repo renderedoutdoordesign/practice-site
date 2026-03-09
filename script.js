@@ -1,7 +1,6 @@
 /* ============================================================
    RENDERED OUTDOOR DESIGN — Main Script
    ============================================================ */
-
 (function () {
   'use strict';
 
@@ -38,41 +37,39 @@
   const yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-  /* ---------- Scroll-reveal animation ---------- */
-  const revealEls = document.querySelectorAll(
-    '.service-card, .portfolio-item, .testimonial-card, .about-content, .about-image, .contact-info, .contact-form'
-  );
-
-  const revealObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('revealed');
-          revealObserver.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
-  );
-
-  revealEls.forEach((el, i) => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(24px)';
-    el.style.transition = `opacity 0.55s ease ${i * 0.06}s, transform 0.55s ease ${i * 0.06}s`;
-    revealObserver.observe(el);
+  /* ---------- CTA buttons pre-select service dropdown ---------- */
+  document.querySelectorAll('a[data-service]').forEach(link => {
+    link.addEventListener('click', () => {
+      const serviceVal = link.getAttribute('data-service');
+      const select = document.getElementById('service');
+      if (select && serviceVal) {
+        select.value = serviceVal;
+      }
+    });
   });
 
-  document.addEventListener('animationend', () => {}, false);
+  /* ---------- Scroll animations ---------- */
+  const animatedEls = document.querySelectorAll('.animate-on-scroll');
+  if (animatedEls.length && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
 
-  // Add revealed styles via JS so CSS isn't required
-  const styleTag = document.createElement('style');
-  styleTag.textContent = '.revealed { opacity: 1 !important; transform: none !important; }';
-  document.head.appendChild(styleTag);
+    animatedEls.forEach(el => observer.observe(el));
+  } else {
+    // Fallback: show everything
+    animatedEls.forEach(el => el.classList.add('is-visible'));
+  }
 
-  /* ---------- Contact form ---------- */
+  /* ---------- Contact form — Web3Forms ---------- */
   const form = document.getElementById('contact-form');
   if (form) {
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       // Basic client-side validation
@@ -85,23 +82,36 @@
           field.style.borderColor = '';
         }
       });
-
       if (!valid) return;
 
-      // Temporary success feedback (replace with actual form service integration)
-      const btn = form.querySelector('button[type="submit"]');
+      const btn = document.getElementById('submit-btn');
       const original = btn.textContent;
-      btn.textContent = 'Message Sent!';
+      btn.textContent = 'Sending\u2026';
       btn.disabled = true;
-      btn.style.background = '#5a7a5a';
 
-      setTimeout(() => {
-        btn.textContent = original;
+      try {
+        const response = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: new FormData(form)
+        });
+        const data = await response.json();
+        if (data.success) {
+          form.reset();
+          const successMsg = document.getElementById('form-success');
+          if (successMsg) successMsg.style.display = 'block';
+          btn.style.display = 'none';
+          const note = form.querySelector('.form-note');
+          if (note) note.style.display = 'none';
+        } else {
+          btn.textContent = 'Something went wrong \u2014 please try again';
+          btn.disabled = false;
+          setTimeout(() => { btn.textContent = original; }, 4000);
+        }
+      } catch {
+        btn.textContent = 'Something went wrong \u2014 please try again';
         btn.disabled = false;
-        btn.style.background = '';
-        form.reset();
-      }, 3500);
+        setTimeout(() => { btn.textContent = original; }, 4000);
+      }
     });
   }
-
 })();
