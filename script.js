@@ -7,7 +7,7 @@
   /* ---------- Sticky nav ---------- */
   const header = document.getElementById('site-header');
   const onScroll = () => {
-    header.classList.toggle('scrolled', window.scrollY > 40);
+    header.classList.toggle('scrolled', window.scrollY > 0);
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();

@@ -167,9 +167,7 @@ section { padding: clamp(5rem, 10vw, 8rem) 0; }
               box-shadow var(--transition), padding var(--transition);
 }
 #site-header.scrolled {
-  background: rgba(26, 36, 24, 0.96);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgb(45, 74, 45);
   box-shadow: 0 2px 24px rgba(0,0,0,0.22);
   padding: 0.85rem 0;
 }
@@ -453,7 +451,7 @@ section { padding: clamp(5rem, 10vw, 8rem) 0; }
 /* ============================================================
    CONTACT
    ============================================================ */
-#contact { background: var(--color-white); }
+#contact { background: var(--color-white); padding-bottom: 3rem; }
 .contact-layout {
   display: grid;
   grid-template-columns: 1fr 1.5fr;
