@@ -49,6 +49,17 @@
 .animate-on-scroll[data-delay="3"] { transition-delay: 0.45s; }
 .animate-on-scroll[data-delay="4"] { transition-delay: 0.6s; }
 
+/* ---------- Visibility safeguard — no scroll animations ---------- */
+.service-card,
+.process-step,
+.about-image,
+.about-content,
+.contact-info,
+.contact-form {
+    opacity: 1 !important;
+    transform: none !important;
+}
+
 /* ---------- Reset & Base ---------- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; font-size: 16px; }
